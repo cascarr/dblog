@@ -16,10 +16,13 @@ return new class extends Migration
         Schema::create('blog_posts', function (Blueprint $table) {
             $table->id();
 
-            /** our code starts here */
-            $table->text('title'); // Title of the blog
-            $table->text('body'); // Body of the blog post
-            $table->text('user_id'); // user_id of the blog post author
+            // columns
+            $table->string('title');
+            $table->text('body');
+            $table->text('user_id');
+            $table->string('category_id');
+            $table->string('photo_name')->nullable();
+            $table->string('photo_path')->nullable();
 
             $table->timestamps();
         });

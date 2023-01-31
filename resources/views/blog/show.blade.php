@@ -82,34 +82,40 @@
                             <div class="col-lg-12">
                                 <div class="blog-post">
                                     <div class="blog-thumb">
-                                        <img src="{{ asset( 'images/blog-post-01.jpg' ) }}" alt="post img">
+                                        <img src="{{ asset( '/storage/uploads/'. $post->photo_name ) }}" alt="{{$post->photo_name}}">
                                     </div><!--- blog-thumb --->
                                     <div class="down-content">
                                         <span>
-                                            Lifestyle
+                                            {{ $post->category->title }}
                                         </span>
                                         {{-- <a href="#"> --}}
                                             <h4>
                                                 {{ ucfirst($post->title) }}
                                             </h4>
                                         {{-- </a> --}}
+
                                         <ul class="post-info">
                                             <li>
-                                                {{-- <a href="#"> --}}
+                                                <a href="{{ route( 'author.posts', $post->author->id ) }}">
                                                     {{ $post->author->name }}
-                                                {{-- </a> --}}
+                                                </a>
                                             </li>
                                             <li>
-                                                {{-- <a href="#"> --}}
+                                                <a>
                                                     {{ $post->created_at }}
-                                                {{-- </a> --}}
+                                                </a>
                                             </li>
                                             <li>
-                                                {{-- <a href="#"> --}}
-                                                    10 Comments
-                                                {{-- </a> --}}
+
+                                                @if ( count($post->comments) > 1 )
+                                                  {{ count($post->comments) }} Comments
+                                                @else
+                                                  {{ count($post->comments) }} Comment
+                                                @endif
+
                                             </li>
                                         </ul><!--- post-info --->
+
                                         <p>
                                             {{ $post->body }}
                                         </p>
@@ -120,17 +126,13 @@
                                                         <li>
                                                             <i class="fa fa-tags"></i>
                                                         </li>
-                                                        <li>
-                                                            <a href="#">
-                                                                Best Templates
-                                                            </a>,
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">
-                                                                TemplateMo
-                                                            </a>
-                                                        </li>
-                                                    </ul><!--- post-tags --->
+                                                        @foreach ($post->tags as $tag)
+                                                        <label class="label label-info">
+                                                            #{{ $tag->slug }}
+                                                        </label>
+                                                        @endforeach
+                                                    </ul>
+
                                                 </div><!--- col-6 --->
                                                 <div class="col-6">
                                                     <ul class="post-share">
@@ -160,7 +162,19 @@
                             <div class="col-lg-12">
                                 <div class="sidebar-item comments">
                                     <div class="sidebar-heading">
-                                        <h2>4 comments</h2>
+                                        <h2>
+                                            @if ( count($post->comments) > 1 )
+
+                                                {{ count($post->comments) }} Comments
+
+                                            @elseif ( count($post->comments) == 1 )
+
+                                                {{ count($post->comments) }} Comment
+
+                                            @else
+                                                0 Comment
+                                            @endif
+                                        </h2>
                                     </div><!--- sidebar-heading --->
                                     <div class="content">
                                         <ul>
@@ -287,11 +301,15 @@
                                     </div><!--- sidebar-heading --->
                                     <div class="content">
                                         <ul>
-                                            <li>
-                                                <a href="#">
-                                                    Nature LifeStyle
-                                                </a>
-                                            </li>
+                                            @forelse ( $categories as $category )
+                                                <li>
+                                                    <a href="#">
+                                                        {{ $category->title }}
+                                                    </a>
+                                                </li>
+                                            @empty
+                                            <p>No post available</p>
+                                            @endforelse
                                         </ul>
                                     </div><!--- content --->
                                 </div><!--- sidebar-item categories --->
@@ -304,9 +322,11 @@
                                     <div class="content">
                                         <ul>
                                             <li>
-                                                <a href="#">
-                                                    Lifestyle
-                                                </a>
+                                                @foreach ($post->tags as $tag)
+                                                    <a>
+                                                        {{ $tag->name }}
+                                                    </a>
+                                                @endforeach
                                             </li>
                                         </ul>
                                     </div><!--- content --->
@@ -470,28 +490,56 @@
 
         <div class="modal-body">
 
-          <form method="POST" action="{{ route( 'posts.store' ) }}">
-              @csrf
+            <form method="POST" action="{{ route( 'posts.store' ) }}" enctype="multipart/form-data">
+                @csrf
 
-            <div class="form-group">
-              <label for="">Title</label>
-              <input type="text" class="form-control" id="title" name="title"
-                     placeholder="Enter title" value="">
-            </div>
+              <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" name="title"
+                       placeholder="Enter title" value="">
+              </div>
 
-            <div class="form-group">
-              <label for="">Body</label>
-              <input type="text" class="form-control" id="body" name="body"
-                     placeholder="Enter a post description" value="">
-            </div>
+              <div class="form-group">
+                <label for="body">Body</label>
+                <textarea name="body" id="body" class="form-control" cols="30" rows="5">Description</textarea>
+              </div>
 
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">
-                Save Story
-              </button>
-            </div><!-- modal-footer -->
-          </form>
+              <div class="form-group">
+
+                  <label for="category_id">
+                      Choose a category
+                  </label>
+                  <div class="input-group mb-3">
+                      <select name="category_id" id="category_id" class="custom-select">
+                          <option selected>
+                              What category is your story...
+                          </option>
+                          @foreach ($selcategories as $category)
+                            <option value="{{ $category->id }}">{{ $category->title }}</option>
+                          @endforeach
+                      </select>
+                  </div>
+
+              </div>
+
+              <div class="form-group">
+                  <label for="tags">Tag your story</label>
+                  <input type="text" class="form-control" id="tags" name="tags"
+                         data-role="tagsinput" placeholder="Make a tag">
+              </div>
+
+              <div class="img-container">
+                  Photos paint a great story
+                  <input type="file" class="form-control" id="imageFile" name="imageFile">
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn " style="background-color: orangered;">
+                  Save Story
+                </button>
+              </div><!-- modal-footer -->
+            </form>
 
         </div><!-- modal-body -->
 

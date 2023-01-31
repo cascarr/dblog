@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\BlogPost;
+use App\Models\User;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\BgAuthController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\AuthorController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+
 
 // Homepage
 //Route::get('/home', [BgAuthController::class, 'homepage']);
@@ -48,6 +51,7 @@ Route::get('/blog/{blogPost}', [BlogPostController::class, 'show'])->name('blog.
 // deletes post from the database
 // Route::delete('blog/{blogPost}', [BlogPostController::class, 'destroy']);
 
+
 /**
  * BlogPostController Ajax
  */
@@ -73,11 +77,22 @@ Route::get('signout', [BgAuthController::class, 'signOut'])->name('signout');
 /**
  * User profile management
  */
-Route::get('user', [AuthorController::class, 'profile'])->name('profile')->middleware('auth');
+
 // Route::get('user/edit/{author}', [AuthorController::class, 'editprofile'])->name('edit.profile');
 // Route::post('user/update/{author}', [AuthorController::class, 'updateprofile'])->name('update.profile');
 // Route::get('user/reset', [AuthorController::class, 'reset_passwd'])->name('reset.password');
-Route::post('user/change_passwd/', [AuthorController::class, 'updatepasswd'])->name('update.passwd');
+
+
+// ->middleware('auth')
+Route::group(['prefix' => 'user', 'middleware' => ['auth']], function() {
+    //
+    Route::get('/', [AuthorController::class, 'profile'])->name('profile');
+    Route::post('user/banner', [AuthorController::class, 'usrbanner'])->name('mybanner.update');
+    Route::post('user/profile_photo', [AuthorController::class, 'profilepic'])->name('myprofilepic.update');
+    Route::post('user/change_passwd', [AuthorController::class, 'updatepasswd'])->name('update.passwd');
+
+});
+
 
 Route::get('user/posts/{author}', [AuthorController::class, 'author_post'])->name('author.posts');
 Route::get('user/authposts/{author}', [AuthorController::class, 'auth_authorposts'])->name('auth_author.posts');

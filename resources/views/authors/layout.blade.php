@@ -16,6 +16,187 @@
     <link rel="stylesheet" href="{{ url('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url('dashboard/css/now-ui-dashboard.css?v=1.5.0') }}">
     <link rel="stylesheet" href="{{ url('dashboard/css/demo.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+
+        .container-icon {
+            position:relative;
+        }
+
+        .container-icon img {
+            display: block;
+        }
+
+        .container-icon .bi-pencil {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin-right: 10px;
+            margin-top: 5px
+        }
+
+        .button_outer {
+            background: #83ccd3;
+            border-radius: 30px;
+            display: inline-block;
+            overflow: hidden;
+            position: relative;
+            transition: .2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn_upload {
+            color: #fff;
+            display: inline-block;
+            overflow: hidden;
+            padding: 17px 30px 12px;
+            position: relative;
+            text-align: center;
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        .btn_upload input {
+            cursor: pointer;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            width: 100%
+        }
+
+        .processing_bar {
+            background: #83ccd3;
+            border-radius: 30px;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            transition: 3s;
+            top: 0;
+            width: 0;
+        }
+
+        .success_box {
+            display: none;
+            height: 50px;
+            position: relative;
+            width: 50px;
+        }
+
+        .success_box:before {
+            content: '';
+            border-bottom: 6px solid #fff;
+            border-right: 6px solid #fff;
+            display: block;
+            height: 18px;
+            left: 17px;
+            position: absolute;
+            transform: rotate(45deg);
+            top: 10px;
+            width: 9px;
+            -moz-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+        }
+
+        .error_msg {
+            color: #f00;
+            text-align: center;
+        }
+
+        .uploaded_file_view {
+            border: 2px solid #ddd;
+            margin: 40px auto;
+            max-width: 300px;
+            opacity: 0;
+            padding: 15px;
+            position: relative;
+            text-align: center;
+            transition: .2s;
+        }
+
+        .file_remove {
+            background: #aaa;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            display: block;
+            font-size: 12px;
+            height: 30px;
+            line-height: 30px;
+            right: -15px;
+            top: -15px;
+            width: 30px;
+        }
+
+        .file_remove:hover {
+            background: #222;
+            transition: .2s;
+        }
+
+        .uploaded_file_view img {
+            max-width: 100%;
+        }
+
+        .uploaded_file_view.show {
+            opacity: 1;
+        }
+
+        .file_uploading {
+            background: #ccc;
+            height: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .file_uploading .btn_upload {
+            display: none;
+        }
+
+        .file_uploading .processing_bar {
+            width: 100%;
+        }
+
+        .file_uploaded .success_box {
+            display: inline-block;
+        }
+
+        .file_uploaded {
+            background: #83ccd3;
+            height: 50px;
+            margin-top: 0;
+            width: 50px;
+        }
+
+        /**
+          code for user card panel
+         */
+         .profile-card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            margin: auto;
+            max-width: 300px;
+            text-align: center;
+         }
+
+         .card-button {
+            background-color: orangered; /** #000 */
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 18px;
+            outline: 0;
+            padding: 8px;
+            text-align: center;
+            width: 100%;
+         }
+
+         .card-button:hover {
+            opacity: 0.7;
+         }
+
+    </style>
 
 </head>
 
@@ -45,7 +226,7 @@
                     </li>
                     <li>
                         <a href="#" type="button" data-toggle="modal"
-                           onclick="editprofile( `{{ $author->id }}`, `{{ $author->name }}`, `{{ $author->email }}` )">
+                           onclick="editprofile( `{{ $author->id }}`, `{{ $author->name }}`, `{{ $author->email }}`, `{{ $author->profile_photo_name }}` )">
                             <i class="now-ui-icons text_caps-small"></i>
                             <p>
                                 Edit Profile
@@ -133,7 +314,7 @@
                                     <i class="now-ui-icons location_world"></i>
                                     <p>
                                         <span class="d-lg-none d-md-block">
-                                            Some Actions
+                                            Home
                                         </span>
                                     </p>
                                 </a>
@@ -252,7 +433,7 @@
                         <div class="modal-footer">
                             <input type="hidden" class="form-control" id="edit_idInput" name="id">
                             <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                            <input type="submit" class="btn btn-info" value="Update Profile">
+                            <input type="submit" class="btn btn-primary" value="Update">
                         </div>
                     </form>
                 </div><!--- modal-body --->
@@ -314,7 +495,7 @@
 
                         <div class="modal-footer">
                             <input type="button" class="btn btn-secondary" data-dismiss="modal" value="Cancel">
-                            <input type="submit" class="btn btn-info" value="Update">
+                            <input type="submit" class="btn btn-primary" value="Update">
                         </div><!--- modal-footer --->
 
                     </form>
@@ -324,6 +505,8 @@
          </div><!--- modal-dialog --->
     </div><!--- modal fade --->
 
+
+    {{-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> --}}
 
     <!--- Core JS Files --->
     <script src="{{ asset('dashboard/js/core/jquery.min.js') }}"></script>
@@ -363,6 +546,46 @@
         }
 
     </script>
+
+<script>
+
+    var btnUpload = $("#bannerImg"),
+        btnOuter = $(".button-outer");,
+
+
+    btnUpload.on("change", function(e) {
+
+        var ext = btnUpload.val().split('.').pop().toLowerCase();
+
+        if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
+            $(".error_msg").text("Not an Image...");
+        } else {
+            $(".error_msg").text("");
+            btnOuter.addClass("file_uploading");
+            setTimeOut(function() {
+                btnOuter.addClass("file_uploaded");
+            }, 3000);
+
+            var uploadedFile = URL.createObjectURL(e.target.files[0]);
+
+            setTimeout(function() {
+                $("#uploaded_view").append('
+                <img src="'+ uploadedFile +'" />').addClass("show");
+            }, 3500);
+        }
+
+    });
+    $(".file_remove").on("click", function(e) {
+
+        $("#uploaded_view").removeClass("show");
+        $("#uploaded_view").find("img").remove();
+
+        btnOuter.removeClass("file_uploading");
+        btnOuter.removeClass("file_uploaded");
+
+    });
+
+</script>
 
 </body>
 

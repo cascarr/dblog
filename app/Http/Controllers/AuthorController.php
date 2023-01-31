@@ -24,6 +24,8 @@ class AuthorController extends Controller
 
     /**
      * Call up the profile edit form
+     * NOT IN USE
+     *
      */
     public function editprofile(User $author) {
         // check if user is authenticated
@@ -41,6 +43,8 @@ class AuthorController extends Controller
 
     /**
      * Store author's update
+     *
+     * NOT IN USE
      */
     public function updateprofile(User $author, Request $request) {
 
@@ -127,6 +131,65 @@ class AuthorController extends Controller
 
     }
 
+    /**
+     * Update user's banner
+      */
+    public function usrbanner(Request $request) {
+
+        if (Auth::check()) {
+            //
+            $request->validate([
+                'bannerImg' => 'required|mimes:jpeg,jpg,png,gif,csv|max:2018'
+            ]);
+
+            if ($request->hasFile('bannerImg')) {
+
+                $photoname = $request->bannerImg->getClientOriginalName();
+                $photopath = $request->bannerImg->storeAs('uploads', $photoname, 'public');
+                $storedLocation = '/storage/'. $photopath;
+
+                Auth()->user()->update([
+                    'profile_banner_name' => $photoname,
+                    'profile_banner_path' => $storedLocation,
+                ]);
+
+            }
+            return redirect()->back();
+        }
+        return redirect('login')->withSuccess('You must be logged in!!');
+
+    }
+
+    /**
+     * Update user's profile picture
+     */
+    public function profilepic(Request $request) {
+
+        if (Auth::check()) {
+            //
+            $request->validate([
+                'profileImg' => 'required|mimes:jpeg,jpg,png,gif,csv|max:2018'
+            ]);
+
+            if ($request->hasFile('profileImg')) {
+
+                $pphotoName = $request->profileImg->getClientOriginalName();
+                $pphotoPath = $request->profileImg->storeAs('uploads', $pphotoName, 'public');
+                $storedLocation = '/storage/'. $pphotoPath;
+
+                Auth()->user()->update([
+                    'profile_photo_name' => $pphotoName,
+                    'profile_photo_path' => $storedLocation,
+                ]);
+
+            }
+            return redirect()->back();
+
+        }
+        return redirect('login')->withSuccess('You must be logged in!!');
+
+    }
+
     //
     /**
      * Get all post from an author
@@ -151,6 +214,7 @@ class AuthorController extends Controller
         $posts = BlogPost::where('user_id', Auth::user()->id)->get();
         // $posts = BlogPost::where('user_id', $author->id)->get();
         $last_post = BlogPost::whereUserId(Auth::user()->id)->first();
+
 
         return view('authors.authposts', [
             'posts' => $posts,

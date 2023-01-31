@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Response;
@@ -15,11 +16,15 @@ class BlogPostController extends Controller
         // $postss = BlogPost::skip(10)->limit(4)->get();
         $postss = BlogPost::latest()->limit(3)->get();
         // dd($postss);
+        $categories = Category::latest()->limit(3)->get();
+        $selcategories = Category::latest()->get();
 
         return view('welcome', [
             'bposts' => $bposts,
             'posts' => $posts,
-            'postss' => $postss
+            'postss' => $postss,
+            'categories' => $categories,
+            'selcategories' => $selcategories,
         ]);
     }
 
@@ -57,6 +62,7 @@ class BlogPostController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * NOT IN USE
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -84,15 +90,36 @@ class BlogPostController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'body' => 'required',
+            'category_id' => 'required',
+            'imageFile' => 'required|mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
+            //'imageFile.*' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
+            'tags' => 'required',
         ]);
 
         if (Auth::check()) {
             //
+            //$fileModal = new Image();
+
+            if ($request->hasfile('imageFile')) {
+
+                $fileName = time().'_'.$request->imageFile->getClientOriginalName();
+                $filePath = $request->file('imageFile')->storeAs('uploads', $fileName, 'public');
+
+                $photoPath = '/storage/'. $filePath;
+            }
+
+            $tags = explode(",", $request->tags);
+
             $newPost = BlogPost::create([
                 'title' => $request->title,
                 'body' => $request->body,
+                'category_id' => $request->category_id,
+                'photo_name' => $fileName,
+                'photo_path' => $photoPath,
                 'user_id' => Auth::id()
             ]);
+
+            $newPost->tag($tags);
 
             return redirect('blog/'. $newPost->id)->with('success', 'Post created successfully!');
         }
@@ -108,10 +135,14 @@ class BlogPostController extends Controller
     public function show(BlogPost $blogPost)
     {
         $postss = BlogPost::latest()->limit(3)->get();
+        $categories = Category::latest()->limit(3)->get();
+        $selcategories = Category::latest()->get();
         //
         return view('blog.show', [
             'post' => $blogPost,
-            'postss' => $postss
+            'postss' => $postss,
+            'categories' => $categories,
+            'selcategories' => $selcategories,
         ]); // returns the fetched posts.
     }
 

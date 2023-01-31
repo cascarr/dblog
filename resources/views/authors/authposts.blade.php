@@ -55,7 +55,9 @@
                     <hr>
                     <div class="stats">
                         <i class="now-ui-icons loader_refresh spin"></i>
-                        You last posted on {{ $post->created_at }}
+                        @if ($post)
+                            You last posted on {{ $post->created_at }}
+                        @endif
                     </div><!--- stats --->
                 </div><!--- card-footer --->
 
@@ -88,7 +90,9 @@
                                     <label for="title">
                                         Title
                                     </label>
-                                    <input type="text" class="form-control" id="editTitle" name="title" value="{{ $post->title }}">
+                                    @if ($post)
+                                        <input type="text" class="form-control" id="editTitle" name="title" value="{{ $post->title }}">
+
                                 </div><!--- form-group --->
                             </div><!--- col-md-6 --->
                         </div><!--- row --->
@@ -102,6 +106,7 @@
                                     <textarea name="body" id="editBody" cols="80" rows="4"
                                               class="form-control">{{ $post->body }}</textarea>
                                 </div><!--- form-group --->
+                                @endif
                             </div><!--- col-md-12 --->
                         </div><!--- row --->
 

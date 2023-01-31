@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ URL::to('css/fontawesome.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ URL::to('css/templatemo-stand-blog.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ URL::to('css/owl.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ URL::to('css/tag-styling.css') }}" type="text/css">
     {{-- <link rel="stylesheet" href="{{ URL::to('css/app-stand.css') }}"> --}}
     {{-- <link rel="stylesheet" href="{{ url('css/app-stand.css') }}"> --}}
     <link href="{{ URL::to('bootstrap-stand/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
@@ -35,6 +36,8 @@
     <!-- Google Fonts -->
     {{-- <link href='//fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i|Libre+Baskerville:400,400i,700' media='all' rel='stylesheet' type='text/css'/> --}}
     {{-- <link href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'/> --}}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css"
+        rel="stylesheet" />
 </head>
 
 <body >
@@ -176,6 +179,7 @@
 
     <script src="{{ asset( 'jquery-stand/jquery.min.js' ) }}" ></script>
     <script src="{{ asset( 'bootstrap-stand/js/bootstrap.bundle.min.js' ) }}" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
 
     <script src="{{ asset( 'js/custom.js' ) }}" ></script>
     <script src="{{ asset( 'js/owl.js' ) }}" ></script>
